@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/ider-zh/lottery/crawler"
+	"github.com/ider-zh/lottery/crawler/ssq"
 )
 
 func main() {
-	crawler.Ssq()
+	ssq.Ssq()
 }
