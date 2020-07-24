@@ -1,10 +1,14 @@
 package ssq
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,37 +21,35 @@ import (
 	"github.com/ider-zh/lottery/models"
 )
 
-func Ssq() {
-	client := &http.Client{
-		Timeout: 15 * time.Second,
+var Client *http.Client
+
+func init() {
+	Client = &http.Client{
+		Timeout: 30 * time.Second,
 	}
-
-	resp, err := client.Get("https://kaijiang.500.com/shtml/ssq/03001.shtml")
-	if err != nil {
-		fmt.Println("http get error", err)
-		return
-	}
-	retData := extractHtml(resp.Body)
-	fmt.Printf("%+v", retData)
-
-	// body, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	fmt.Println("read error", err)
-	// 	return
-	// }
-	// fmt.Println(string(body))
-
-	// fmt.Println(string(body))
 }
 
-func extractHtml(body io.ReadCloser) *models.DoubleBall {
+func GetSsq(Qihao string) (*models.DoubleBall, error) {
+
+	resp, err := Client.Get("https://kaijiang.500.com/shtml/ssq/" + Qihao + ".shtml")
+	if err != nil {
+		fmt.Println("http get error", err)
+		return nil, err
+	}
+	retData, err := extractHtml(resp.Body)
+	return retData, err
+
+}
+
+func extractHtml(body io.ReadCloser) (*models.DoubleBall, error) {
 
 	var retData models.DoubleBall
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(body)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	txt := doc.Find(".ball_blue").Text()
@@ -71,12 +73,14 @@ func extractHtml(body io.ReadCloser) *models.DoubleBall {
 	txt = formatHtmlStr(txt)
 	fmt.Println(txt)
 
-	r, _ := regexp.Compile(`(\w{4})年(\w{1,2})月(\w{1,2})`)
+	r, _ := regexp.Compile(`(\w{4}).*?(\w{1,2}).*?(\w{1,2})`)
 	matched := r.FindStringSubmatch(txt)
-	r, _ = regexp.Compile(`年|月`)
-	retbyte := r.ReplaceAll([]byte(matched[0]), []byte("-"))
-	fmt.Println(string(retbyte)) // true
-	retData.OpenDate = string(retbyte)
+	if len(matched) < 4 {
+		return nil, errors.New("matched less 4")
+	}
+	daystr := fmt.Sprintf("%s-%s-%s", matched[1], matched[2], matched[3])
+	fmt.Println(daystr) // true
+	retData.OpenDate = daystr
 
 	txt = doc.Find("span.cfont1:nth-child(1)").Text()
 	txt = formatHtmlStr(txt)
@@ -132,10 +136,108 @@ func extractHtml(body io.ReadCloser) *models.DoubleBall {
 		}
 	})
 
+	return &retData, nil
+}
+
+// 找到双色球所有期号，返回 map
+func extractSsqList(body io.ReadCloser) *[]string {
+
+	var retData []string
+
+	// Load the HTML document
+	doc, err := goquery.NewDocumentFromReader(body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Find the review items
+	doc.Find(".iSelectList a").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the band and title
+		Qihao := s.Text()
+		retData = append(retData, formatHtmlStr(Qihao))
+	})
+
 	return &retData
+}
+
+func getSsqQihao() {
+	resp, err := Client.Get("https://kaijiang.500.com/shtml/ssq/03001.shtml")
+	if err != nil {
+		fmt.Println("http get error", err)
+		return
+	}
+	retData := extractSsqList(resp.Body)
+	fmt.Printf("%+v", retData)
 }
 
 func formatHtmlStr(str string) string {
 	var decodeBytes, _ = simplifiedchinese.GB18030.NewDecoder().Bytes([]byte(str))
 	return strings.Trim(string(decodeBytes), " \n\t")
+}
+
+func SsqSchedule() {
+	var (
+		retballsfinsh []models.DoubleBall
+		qihaotodo     []string
+		finshQihao    map[string]bool
+	)
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(dir)
+
+	filename := dir + "/file/ssq.json"
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Println(err)
+		f1, err1 := os.Create(filename) //创建文件
+
+		log.Println(err1)
+		f1.Close()
+	} else {
+
+		content, _ := ioutil.ReadAll(f)
+		json.Unmarshal([]byte(content), &retballsfinsh)
+		f.Close()
+	}
+	log.Println("已保存：", len(retballsfinsh))
+	resp, err := Client.Get("https://kaijiang.500.com/shtml/ssq/03001.shtml")
+	if err != nil {
+		fmt.Println("http get error", err)
+		return
+	}
+	retData := extractSsqList(resp.Body)
+	// fmt.Printf("%+v", retData)
+
+	// 获取已存储的期号
+	finshQihao = make(map[string]bool)
+	for _, obj := range retballsfinsh {
+		finshQihao[obj.Qihao] = true
+	}
+
+	// 获取没有采集的期号
+	for _, Qihao := range *retData {
+		if _, ok := finshQihao[Qihao]; !ok {
+			qihaotodo = append(qihaotodo, Qihao)
+		}
+	}
+
+	for _, Qihao := range qihaotodo {
+		log.Println(Qihao)
+		dbball, err := GetSsq(Qihao)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		retballsfinsh = append(retballsfinsh, *dbball)
+
+		jsons, _ := json.Marshal(retballsfinsh)
+		err = ioutil.WriteFile(filename, jsons, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
+
 }

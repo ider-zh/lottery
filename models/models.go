@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-23 21:09:54
  * @LastEditors: ider
- * @LastEditTime: 2020-07-23 21:49:19
+ * @LastEditTime: 2020-07-24 13:06:06
  * @Description:
  */
 
@@ -12,7 +12,7 @@ package models
 import "github.com/jinzhu/gorm"
 
 type DoubleBall struct {
-	gorm.Model
+	gorm.Model   `json:"-"`
 	Qihao        string `gorm:"UNIQUE_INDEX;not null;" json:"qihao"`
 	OpenDate     string `gorm:"UNIQUE_INDEX;not null;" json:"opendate"`
 	RedBall      string `json:"redball"`
