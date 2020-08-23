@@ -18,7 +18,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"github.com/ider-zh/lottery/models"
+	"lottery/models"
 )
 
 var Client *http.Client
@@ -78,9 +78,10 @@ func extractHtml(body io.ReadCloser) (*models.DoubleBall, error) {
 	if len(matched) < 4 {
 		return nil, errors.New("matched less 4")
 	}
-	daystr := fmt.Sprintf("%s-%s-%s", matched[1], matched[2], matched[3])
-	fmt.Println(daystr) // true
-	retData.OpenDate = daystr
+	year, _ := strconv.Atoi(matched[1])
+	mon, _ := strconv.Atoi(matched[2])
+	day, _ := strconv.Atoi(matched[3])
+	retData.OpenDate = time.Date(year, time.Month(mon), day, 21, 15, 0, 0, time.Local)
 
 	txt = doc.Find("span.cfont1:nth-child(1)").Text()
 	txt = formatHtmlStr(txt)
@@ -175,7 +176,8 @@ func formatHtmlStr(str string) string {
 	return strings.Trim(string(decodeBytes), " \n\t")
 }
 
-func SsqSchedule() {
+// 返回所有的历史中奖号码
+func SsqSchedule() *[]models.DoubleBall {
 	var (
 		retballsfinsh []models.DoubleBall
 		qihaotodo     []string
@@ -205,7 +207,7 @@ func SsqSchedule() {
 	resp, err := Client.Get("https://kaijiang.500.com/shtml/ssq/03001.shtml")
 	if err != nil {
 		fmt.Println("http get error", err)
-		return
+		return nil
 	}
 	retData := extractSsqList(resp.Body)
 	// fmt.Printf("%+v", retData)
@@ -237,7 +239,7 @@ func SsqSchedule() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
 	}
-
+	// 保存到数据库
+	return &retballsfinsh
 }
