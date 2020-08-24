@@ -26,8 +26,8 @@ func NewLuckDBConn(PostgresConn string) {
 	LUCKDB.AutoMigrate(&models.DoubleBall{}, &models.UserDoubleBall{})
 }
 
-// 双色当期中奖计算
-func UpdateSsqAward() {
+// 双色当期中奖计算,返回此次中奖结果
+func UpdateSsqAward() []*models.UserDoubleBall {
 	var ret_un_open []*models.UserDoubleBall
 	LUCKDB.Model(&models.UserDoubleBall{}).Where("is_open = ?", false).Order("qihao desc").Find(&ret_un_open)
 	// 历史兑奖
@@ -44,4 +44,5 @@ func UpdateSsqAward() {
 			LUCKDB.Save(obj)
 		}
 	}
+	return ret_un_open
 }

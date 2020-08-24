@@ -3,13 +3,12 @@
  * @Author: ider
  * @Date: 2020-07-27 22:37:43
  * @LastEditors: ider
- * @LastEditTime: 2020-08-23 23:52:32
+ * @LastEditTime: 2020-08-24 11:44:19
  * @Description:
  */
 package ssq
 
 import (
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -46,15 +45,15 @@ func NewDoubleBollAll() {
 }
 
 // 每隔一小时更新一次数据
-func (c *DoubleBollAll) Update() {
-	k := time.Now()
-	d, _ := time.ParseDuration("+1h")
-	k.Add(d)
-	if c.lastUpdate.After(k) {
-		log.Println("update DoubleBollAll")
-		NewDoubleBollAll()
-	}
-}
+// func (c *DoubleBollAll) Update() {
+// 	k := time.Now()
+// 	d, _ := time.ParseDuration("+1h")
+// 	k.Add(d)
+// 	if c.lastUpdate.After(k) {
+// 		log.Println("update DoubleBollAll")
+// 		NewDoubleBollAll()
+// 	}
+// }
 
 // 历史中奖判断,只返回5等奖以上的
 func (c *DoubleBollAll) AwardCheck(ssqball *SsqBall) *[]AwardResult {

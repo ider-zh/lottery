@@ -3,13 +3,14 @@
  * @Author: ider
  * @Date: 2020-07-23 21:09:54
  * @LastEditors: ider
- * @LastEditTime: 2020-08-24 01:46:21
+ * @LastEditTime: 2020-08-24 11:59:15
  * @Description:
  */
 
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -47,4 +48,27 @@ type UserDoubleBall struct {
 	E        int         `json:"e"`
 	F        int         `json:"f"`
 	History  interface{} `gorm:"-" json:"history"` //历史中奖，实时计算，用来表达历史中奖
+}
+
+func (c *UserDoubleBall) ToString() []string {
+	var retS []string
+	if c.A > 0 {
+		retS = append(retS, fmt.Sprintf("一等奖 %d 注", c.A))
+	}
+	if c.B > 0 {
+		retS = append(retS, fmt.Sprintf("二等奖 %d 注", c.B))
+	}
+	if c.C > 0 {
+		retS = append(retS, fmt.Sprintf("三等奖 %d 注", c.C))
+	}
+	if c.D > 0 {
+		retS = append(retS, fmt.Sprintf("四等奖 %d 注", c.D))
+	}
+	if c.E > 0 {
+		retS = append(retS, fmt.Sprintf("五等奖 %d 注", c.E))
+	}
+	if c.F > 0 {
+		retS = append(retS, fmt.Sprintf("六等奖 %d 注", c.F))
+	}
+	return retS
 }

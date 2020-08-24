@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-27 21:17:00
  * @LastEditors: ider
- * @LastEditTime: 2020-08-24 01:51:59
+ * @LastEditTime: 2020-08-24 10:56:54
  * @Description:
  */
 
@@ -44,6 +44,7 @@ type Routes []Route
 // NewRouter returns a new router.
 func NewRouter() *gin.Engine {
 	router := gin.Default()
+	router.LoadHTMLGlob("public/views/Status.html")
 
 	store := cookie.NewStore([]byte("zhiku-secret"))
 	router.Use(sessions.Sessions("auth", store))
@@ -62,6 +63,20 @@ func NewRouter() *gin.Engine {
 			case http.MethodDelete:
 				api.DELETE(route.Pattern, route.HandlerFunc...)
 			}
+		}
+	}
+
+	childRouter := api.Group("/jobrunner")
+	for _, route := range jobRoutes {
+		switch route.Method {
+		case http.MethodGet:
+			childRouter.GET(route.Pattern, route.HandlerFunc...)
+		case http.MethodPost:
+			childRouter.POST(route.Pattern, route.HandlerFunc...)
+		case http.MethodPut:
+			childRouter.PUT(route.Pattern, route.HandlerFunc...)
+		case http.MethodDelete:
+			childRouter.DELETE(route.Pattern, route.HandlerFunc...)
 		}
 	}
 
@@ -85,6 +100,22 @@ func Index(c *gin.Context) {
 // 		c.Abort()
 // 	}
 // }
+
+var jobRoutes = Routes{
+
+	{
+		"JobJson",
+		http.MethodGet,
+		"/json",
+		[]gin.HandlerFunc{JobJson},
+	},
+	{
+		"JobHtml",
+		http.MethodGet,
+		"/html",
+		[]gin.HandlerFunc{JobHtml},
+	},
+}
 
 var RoutesPublic = Routes{
 	{

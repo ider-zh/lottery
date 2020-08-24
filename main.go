@@ -8,6 +8,7 @@ import (
 	"lottery/config"
 	"lottery/database"
 	"lottery/internal/award/ssq"
+	"lottery/utils/mail"
 	"time"
 
 	"github.com/emirpasic/gods/sets/hashset"
@@ -105,4 +106,12 @@ func main() {
 	fmt.Println(outs)
 	// ssqball = ssq.SsqBall{Redboll: []int{1, 3, 7, 21, 27, 32}, Blueboll: []int{3}}
 
+	fmt.Println("test schedule")
+	// var cc = schedule.AwardCheckerJob{}
+
+	// cc.Run()
+
+	mail.NewSimpleTextMail("测试主题", "开始i干活")
+
+	time.Sleep(5 * time.Second)
 }

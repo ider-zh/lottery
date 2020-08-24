@@ -19,7 +19,26 @@ content-type: application/json
     "redball": "1 3 7 21 27 32",
     "blueball": "09",
     "multiple": 1
+},
+{
+    "qihao": "20064",
+    "redball": "03 32 21 01 27 07 33",
+    "blueball": "09 11",
+    "multiple": 1
 }
+
 ]
 ###
 Get http://127.0.0.1:18080/api/userdoubleboll HTTP/1.1
+
+###
+DELETE  http://127.0.0.1:18080/api/userdoubleboll HTTP/1.1
+content-type: application/json
+
+{
+    "ID": 10
+}
+
+
+###
+Get http://127.0.0.1:18080/api/jobrunner/json HTTP/1.1

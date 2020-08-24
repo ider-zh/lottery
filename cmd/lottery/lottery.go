@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-27 21:16:07
  * @LastEditors: ider
- * @LastEditTime: 2020-08-23 21:03:11
+ * @LastEditTime: 2020-08-24 11:43:27
  * @Description:
  */
 
@@ -24,6 +24,7 @@ import (
 	"lottery/database"
 	sw "lottery/internal/api"
 	"lottery/internal/award/ssq"
+	"lottery/utils/schedule"
 )
 
 func main() {
@@ -32,6 +33,7 @@ func main() {
 	database.NewLuckDBConn(cfg.PgConn)
 	log.Printf("Server started")
 	ssq.NewDoubleBollAll()
+	schedule.Schedule()
 	router := sw.NewRouter()
 
 	// router.Use(gin.Recovery())

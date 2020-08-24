@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"lottery/database"
 	"lottery/models"
 	"lottery/utils"
@@ -68,7 +67,6 @@ func UserDoubaleBollGet(c *gin.Context) {
 		ssqball := ssq.SsqBall{Redboll: utils.BollStrToNum(obj.RedBall), Blueboll: utils.BollStrToNum(obj.BlueBall)}
 		ret := ssq.DBAll.AwardCheck(&ssqball)
 		obj.History = ret
-		fmt.Println(ret)
 	}
 
 	// 历史兑奖
@@ -76,7 +74,6 @@ func UserDoubaleBollGet(c *gin.Context) {
 		ssqball := ssq.SsqBall{Redboll: utils.BollStrToNum(obj.RedBall), Blueboll: utils.BollStrToNum(obj.BlueBall)}
 		ret := ssq.DBAll.AwardCheck(&ssqball)
 		obj.History = ret
-		fmt.Println(ret)
 	}
 
 	c.JSON(200, gin.H{"open": ret_open, "unopen": ret_un_open})

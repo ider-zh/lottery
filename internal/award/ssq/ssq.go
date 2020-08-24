@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-26 00:34:16
  * @LastEditors: ider
- * @LastEditTime: 2020-08-23 20:22:24
+ * @LastEditTime: 2020-08-24 11:00:32
  * @Description:
  */
 package ssq
@@ -13,7 +13,7 @@ import (
 	"math/rand"
 	"sort"
 
-	"lottery/util"
+	"lottery/utils"
 )
 
 type AwardCheck struct {
@@ -59,17 +59,17 @@ func (c *AwardCheck) CheckMulitAward(ssqball *SsqBall) *AwardResult {
 		}
 	}
 
-	retred := util.IntersectionInt(&c.Redboll, &ssqball.Redboll)
+	retred := utils.IntersectionInt(&c.Redboll, &ssqball.Redboll)
 	rc = len(*retred)
 	rcn := len(ssqball.Redboll) - rc
 	bcn := len(ssqball.Blueboll) - bc
 	retaward.Q = c.Qihao
-	retaward.A = util.Combine(rc, 6) * util.Combine(bc, 1)
-	retaward.B = util.Combine(rc, 6) * util.Combine(bcn, 1)
-	retaward.C = util.Combine(rc, 5) * util.Combine(rcn, 1) * util.Combine(bc, 1)
-	retaward.D = util.Combine(rc, 5)*util.Combine(rcn, 1)*util.Combine(bcn, 1) + util.Combine(rc, 4)*util.Combine(rcn, 2)*util.Combine(bc, 1)
-	retaward.E = util.Combine(rc, 4)*util.Combine(rcn, 2)*util.Combine(bcn, 1) + util.Combine(rc, 3)*util.Combine(rcn, 3)*util.Combine(bc, 1)
-	retaward.F = util.Combine(rc, 2)*util.Combine(rcn, 4)*util.Combine(bc, 1) + util.Combine(rc, 1)*util.Combine(rcn, 5)*util.Combine(bc, 1) + util.Combine(rcn, 6)*util.Combine(bc, 1)
+	retaward.A = utils.Combine(rc, 6) * utils.Combine(bc, 1)
+	retaward.B = utils.Combine(rc, 6) * utils.Combine(bcn, 1)
+	retaward.C = utils.Combine(rc, 5) * utils.Combine(rcn, 1) * utils.Combine(bc, 1)
+	retaward.D = utils.Combine(rc, 5)*utils.Combine(rcn, 1)*utils.Combine(bcn, 1) + utils.Combine(rc, 4)*utils.Combine(rcn, 2)*utils.Combine(bc, 1)
+	retaward.E = utils.Combine(rc, 4)*utils.Combine(rcn, 2)*utils.Combine(bcn, 1) + utils.Combine(rc, 3)*utils.Combine(rcn, 3)*utils.Combine(bc, 1)
+	retaward.F = utils.Combine(rc, 2)*utils.Combine(rcn, 4)*utils.Combine(bc, 1) + utils.Combine(rc, 1)*utils.Combine(rcn, 5)*utils.Combine(bc, 1) + utils.Combine(rcn, 6)*utils.Combine(bc, 1)
 	return &retaward
 }
 

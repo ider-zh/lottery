@@ -189,7 +189,7 @@ func SsqSchedule() *[]models.DoubleBall {
 	}
 	log.Println(dir)
 
-	filename := dir + "/file/ssq.json"
+	filename := dir + "/public/ssq.json"
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Println(err)
