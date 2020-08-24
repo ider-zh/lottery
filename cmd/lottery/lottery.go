@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-27 21:16:07
  * @LastEditors: ider
- * @LastEditTime: 2020-08-24 11:43:27
+ * @LastEditTime: 2020-08-24 12:41:17
  * @Description:
  */
 
@@ -37,5 +37,5 @@ func main() {
 	router := sw.NewRouter()
 
 	// router.Use(gin.Recovery())
-	log.Fatal(router.Run(":18080"))
+	log.Fatal(router.Run(":" + cfg.GinPort))
 }

@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-26 00:38:40
  * @LastEditors: ider
- * @LastEditTime: 2020-07-26 00:58:54
+ * @LastEditTime: 2020-08-24 12:41:43
  * @Description:
  */
 package config
@@ -15,7 +15,8 @@ import (
 )
 
 type Config struct {
-	PgConn string `env:"PGCONN" envDefault:"host=127.0.0.1 port=5432 user=postgres dbname=ssq password=postgres sslmode=disable"`
+	PgConn  string `env:"PGCONN" envDefault:"host=127.0.0.1 port=5432 user=postgres dbname=ssq password=ider001 sslmode=disable"`
+	GinPort string `env:"GINPORT" envDefault:"18080"`
 }
 
 func GetConfig() Config {
