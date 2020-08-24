@@ -44,11 +44,13 @@ func (e AwardCheckerJob) Run() {
 		if len(ret) > 0 {
 			awdCount += 1
 			textA = append(textA, "期号："+obj.Qihao+" "+strings.Join(ret, ","))
+		} else {
+			textA = append(textA, "期号："+obj.Qihao+" 未中奖")
 		}
 	}
 	if awdCount > 0 {
 		subject = fmt.Sprintf("恭喜，有 %d 注幸运中奖", awdCount)
 	}
 	fmt.Println(subject, strings.Join(textA, "/n"))
-	mail.NewSimpleTextMail(subject, strings.Join(textA, "/n"))
+	mail.NewSimpleTextMail(subject, strings.Join(textA, "。 "))
 }
