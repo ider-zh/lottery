@@ -16,7 +16,8 @@ import (
 // 定时任务,一小时更新一次
 func Schedule() {
 	jobrunner.Start() // optional: jobrunner.Start(pool int, concurrent int) (10, 1)
-	jobrunner.Schedule("12 14 1,2,12,22,23 * * *", AwardCheckerJob{})
+	jobrunner.Schedule("15 1,2,12,22,23 * * *", AwardCheckerJob{})
+//	jobrunner.Schedule("* * * * *", AwardCheckerJob{})
 }
 
 // Job Specific Functions
@@ -56,7 +57,7 @@ func (e AwardCheckerJob) Run() {
 		ret := obj.ToString()
 		if len(ret) > 0 {
 			awdCount += 1
-			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。"+strings.Join(ret, ","))
+			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。"+strings.Join(ret, " , "))
 		} else {
 			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。未中奖！")
 		}
@@ -65,5 +66,5 @@ func (e AwardCheckerJob) Run() {
 		subject = fmt.Sprintf("恭喜，有 %d 注幸运中奖！！！", awdCount)
 	}
 	fmt.Println(subject, strings.Join(textA, "/n"))
-	mail.NewSimpleTextMail(subject, strings.Join(textA, "。 "))
+	mail.NewSimpleTextMail(subject, strings.Join(textA, "\r\n"))
 }
