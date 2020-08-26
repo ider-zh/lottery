@@ -5,16 +5,18 @@ import (
 	"log"
 	"lottery/database"
 	"lottery/internal/award/ssq"
+	"lottery/models"
 	"lottery/utils/mail"
 	"strings"
 
 	"github.com/bamzi/jobrunner"
+	"github.com/emirpasic/gods/sets/treeset"
 )
 
 // 定时任务,一小时更新一次
 func Schedule() {
 	jobrunner.Start() // optional: jobrunner.Start(pool int, concurrent int) (10, 1)
-	jobrunner.Schedule("14 * * * *", AwardCheckerJob{})
+	jobrunner.Schedule("12 14 1,2,12,22,23 * * *", AwardCheckerJob{})
 }
 
 // Job Specific Functions
@@ -39,17 +41,28 @@ func (e AwardCheckerJob) Run() {
 		awdCount int
 		textA    []string
 	)
+	// 输出开奖号码
+	set := treeset.NewWithStringComparator()
+	for _, obj := range udbs {
+		if !set.Contains(obj.Qihao) {
+			var adBall models.DoubleBall
+			database.LUCKDB.Where("qihao = ?", obj.Qihao).First(&adBall)
+			textA = append(textA, "开奖号码：期号："+obj.Qihao+", 红球："+adBall.RedBall+"，蓝球："+adBall.BlueBall)
+			set.Add(obj.Qihao)
+		}
+	}
+
 	for _, obj := range udbs {
 		ret := obj.ToString()
 		if len(ret) > 0 {
 			awdCount += 1
-			textA = append(textA, "期号："+obj.Qihao+" "+strings.Join(ret, ","))
+			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。"+strings.Join(ret, ","))
 		} else {
-			textA = append(textA, "期号："+obj.Qihao+" 未中奖")
+			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。未中奖！")
 		}
 	}
 	if awdCount > 0 {
-		subject = fmt.Sprintf("恭喜，有 %d 注幸运中奖", awdCount)
+		subject = fmt.Sprintf("恭喜，有 %d 注幸运中奖！！！", awdCount)
 	}
 	fmt.Println(subject, strings.Join(textA, "/n"))
 	mail.NewSimpleTextMail(subject, strings.Join(textA, "。 "))
