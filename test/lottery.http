@@ -10,8 +10,13 @@ content-type: application/json
 
 GET  http://127.0.0.1:18080/api/qihao  HTTP/1.1
 
+
 ###
-PUT http://127.0.0.1:18080/api/userdoubleboll HTTP/1.1
+GET  http://iwuzhen.org:18070/api/qihao
+
+###
+# PUT http://127.0.0.1:18080/api/userdoubleboll HTTP/1.1
+PUT http://iwuzhen.org:18070/api/userdoubleboll HTTP/1.1
 content-type: application/json
 
 [{
@@ -25,8 +30,13 @@ content-type: application/json
     "redball": "03 32 21 01 27 07 33",
     "blueball": "09 11",
     "multiple": 1
+},
+{
+    "qihao": "20064",
+    "redball": "11 32 21 01 24 07 33",
+    "blueball": "03",
+    "multiple": 1
 }
-
 ]
 ###
 Get http://127.0.0.1:18080/api/userdoubleboll HTTP/1.1

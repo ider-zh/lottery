@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-27 22:37:43
  * @LastEditors: ider
- * @LastEditTime: 2020-08-26 21:36:31
+ * @LastEditTime: 2020-08-27 10:42:01
  * @Description:
  */
 package ssq
@@ -14,6 +14,9 @@ import (
 	"time"
 
 	"lottery/crawler/ssq"
+	"lottery/database"
+
+	"gorm.io/gorm/clause"
 )
 
 var DBAll DoubleBollAll
@@ -27,7 +30,7 @@ func NewDoubleBollAll() {
 	var acks []*AwardCheck
 	ret := ssq.SsqSchedule()
 	for _, obj := range *ret {
-		// database.LUCKDB.Save(&obj)
+		database.LUCKDB.Clauses(clause.OnConflict{DoNothing: true}).Create(&obj)
 		var redbolls []int
 		for _, s := range strings.Split(obj.RedBall, " ") {
 			ss, _ := strconv.Atoi(s)
