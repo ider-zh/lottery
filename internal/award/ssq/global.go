@@ -3,18 +3,19 @@
  * @Author: ider
  * @Date: 2020-07-27 22:37:43
  * @LastEditors: ider
- * @LastEditTime: 2020-08-27 10:42:01
+ * @LastEditTime: 2020-08-27 10:59:33
  * @Description:
  */
 package ssq
 
 import (
+	"lottery/crawler/ssq"
+	"lottery/database"
+	"lottery/models"
+	"lottery/utils"
 	"strconv"
 	"strings"
 	"time"
-
-	"lottery/crawler/ssq"
-	"lottery/database"
 
 	"gorm.io/gorm/clause"
 )
@@ -82,4 +83,29 @@ func (c *DoubleBollAll) AwardCheckQiHao(ssqball *SsqBall, qihao string) (bool, *
 	}
 	return false, nil
 
+}
+
+// 双色当期中奖计算,返回此次中奖结果
+func UpdateSsqAward() []*models.UserDoubleBall {
+	var (
+		un_open     []*models.UserDoubleBall
+		ret_un_open []*models.UserDoubleBall
+	)
+	database.LUCKDB.Model(&models.UserDoubleBall{}).Where("is_open = ?", false).Order("qihao desc").Find(&un_open)
+	// 历史兑奖
+	for _, obj := range un_open {
+		ssqball := SsqBall{Redboll: utils.BollStrToNum(obj.RedBall), Blueboll: utils.BollStrToNum(obj.BlueBall)}
+		if status, ret := DBAll.AwardCheckQiHao(&ssqball, obj.Qihao); status == true {
+			obj.A = ret.A
+			obj.B = ret.B
+			obj.C = ret.C
+			obj.D = ret.D
+			obj.E = ret.E
+			obj.F = ret.F
+			obj.IsOpen = true
+			database.LUCKDB.Save(obj)
+			ret_un_open = append(ret_un_open, obj)
+		}
+	}
+	return ret_un_open
 }

@@ -17,7 +17,7 @@ import (
 func Schedule() {
 	jobrunner.Start() // optional: jobrunner.Start(pool int, concurrent int) (10, 1)
 	jobrunner.Schedule("15 1,2,12,22,23 * * *", AwardCheckerJob{})
-//	jobrunner.Schedule("* * * * *", AwardCheckerJob{})
+	//	jobrunner.Schedule("* * * * *", AwardCheckerJob{})
 }
 
 // Job Specific Functions
@@ -31,7 +31,7 @@ func (e AwardCheckerJob) Run() {
 	// 更新数据
 	ssq.NewDoubleBollAll()
 
-	udbs := database.UpdateSsqAward()
+	udbs := ssq.UpdateSsqAward()
 	// 没有未开奖的
 	if len(udbs) == 0 {
 		return

@@ -56,7 +56,7 @@ func UserDoubaleBollGet(c *gin.Context) {
 		ret_un_open []*models.UserDoubleBall
 		ret_open    []*models.UserDoubleBall
 	)
-	database.UpdateSsqAward()
+	ssq.UpdateSsqAward()
 	database.LUCKDB.Model(&models.UserDoubleBall{}).Where("is_open = ?", false).Order("qihao desc").Find(&ret_un_open)
 	database.LUCKDB.Model(&models.UserDoubleBall{}).Where("is_open = ?", true).Order("qihao desc").Find(&ret_open)
 
