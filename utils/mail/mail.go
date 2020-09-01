@@ -36,11 +36,16 @@ func init() {
 
 	go func() {
 		for e := range EmailChan {
-			err := p.Send(e, 30*time.Second)
-			if err != nil {
-				log.Println("mail send fail,", err)
+			// 失败的任务会重新进行，直到成功
+			for {
+				err := p.Send(e, 30*time.Second)
+				time.Sleep(30 * time.Second)
+				if err != nil {
+					log.Println("mail send fail,", err)
+				} else {
+					break
+				}
 			}
-			time.Sleep(30 * time.Second)
 		}
 	}()
 }
