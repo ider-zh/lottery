@@ -2,12 +2,16 @@ package test
 
 import (
 	"fmt"
+	"lottery/config"
 	"lottery/database"
 	"lottery/models"
 	"testing"
 )
 
 func Test_Lab(t *testing.T) {
+
+	cfg := config.GetConfig()
+	database.NewLuckDBConn(cfg.PgConn)
 	var adBall []models.UserDoubleBall
 	database.LUCKDB.Where("is_open = ?", true).Order("qihao desc").Limit(5000).Find(&adBall)
 	na := 0
