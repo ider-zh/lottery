@@ -53,6 +53,7 @@ func (e AwardCheckerJob) Run() {
 		}
 	}
 
+	// 统计中奖情况
 	for _, obj := range udbs {
 		ret := obj.ToString()
 		if len(ret) > 0 {
@@ -62,9 +63,25 @@ func (e AwardCheckerJob) Run() {
 			textA = append(textA, "期号："+obj.Qihao+" ，红："+obj.RedBall+" ，蓝："+obj.BlueBall+"。未中奖！")
 		}
 	}
+
+	// 输出中奖情况或者连续未中次数
 	if awdCount > 0 {
 		subject = fmt.Sprintf("恭喜，有 %d 注幸运中奖！！！", awdCount)
+	} else {
+		// 统计连续未中奖次数
+		var adBall []models.UserDoubleBall
+		database.LUCKDB.Where("is_open = ?", true).Order("qihao desc").Limit(5000).Find(&adBall)
+		na := 0
+		for _, obj := range adBall {
+			if obj.A == 0 && obj.B == 0 && obj.C == 0 && obj.D == 0 && obj.E == 0 && obj.F == 0 {
+				na++
+			} else {
+				break
+			}
+		}
+		subject = subject + fmt.Sprintf("，连续 %d 注未中奖！！！", na)
 	}
+
 	fmt.Println(subject, strings.Join(textA, "/n"))
 	mail.NewSimpleTextMail(subject, strings.Join(textA, "\r\n"))
 }
