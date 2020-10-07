@@ -3,7 +3,7 @@
  * @Author: ider
  * @Date: 2020-07-27 22:37:43
  * @LastEditors: ider
- * @LastEditTime: 2020-08-27 10:59:33
+ * @LastEditTime: 2020-10-07 18:06:36
  * @Description:
  */
 package ssq
@@ -41,10 +41,12 @@ func NewDoubleBollAll() {
 		ac := NewAwardCheck(obj.Qihao, redbolls, buleboll)
 		acks = append(acks, ac)
 	}
-
-	DBAll = DoubleBollAll{
-		lastUpdate:  time.Now(),
-		AwardCheckS: acks,
+	// 异常更新不影响
+	if len(acks) > 0 {
+		DBAll = DoubleBollAll{
+			lastUpdate:  time.Now(),
+			AwardCheckS: acks,
+		}
 	}
 }
 

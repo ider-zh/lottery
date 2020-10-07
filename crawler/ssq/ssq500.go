@@ -207,7 +207,7 @@ func SsqSchedule() *[]models.DoubleBall {
 	resp, err := Client.Get("https://kaijiang.500.com/shtml/ssq/03001.shtml")
 	if err != nil {
 		fmt.Println("http get error", err)
-		return nil
+		return &retballsfinsh
 	}
 	retData := extractSsqList(resp.Body)
 	// fmt.Printf("%+v", retData)
